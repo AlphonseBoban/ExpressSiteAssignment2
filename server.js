@@ -5,7 +5,7 @@
  */
 
 let app = require('./server/config/app');
-let debug = require('debug')('expressportfoliositeassignment1:server');
+let debug = require('debug')('expressportfoliositeassignment2:server');
 let http = require('http');
 
 /**
