@@ -8,41 +8,41 @@ let userModel = require("../models/user");
 let User = userModel.User; //alias 
 
 module.exports.displayHomePage = (req, res, next) => {
-    res.render("index", {title: "Home"});
+    res.render("index", {title: "Home", displayName: req.user ? req.user.displayName : "",});
 };
 
 module.exports.displayaboutpage = (req, res, next) => {
-    res.render("about", {title: "About me" });
+    res.render("about", {title: "About me", displayName: req.user ? req.user.displayName : "", });
 };
 
 module.exports.displayprojectspage = (req, res, next) => {
-    res.render("projects", { title: "Projects" });
+    res.render("projects", { title: "Projects", displayName: req.user ? req.user.displayName : "", });
 };
 
 module.exports.displayservicespage = (req, res, next) => {
-    res.render("services", { title: "Services" });
+    res.render("services", { title: "Services", displayName: req.user ? req.user.displayName : "", });
 };
 
 module.exports.displaycontactpage = (req, res, next) => {
-    res.render("contact", { title: "Contact Me" });
+    res.render("contact", { title: "Contact Me", displayName: req.user ? req.user.displayName : "", });
 };
 
 module.exports.displayLoginPage = (req, res, next) => {
-  // Check the user is already logged in
+  // Check if the user is already logged in
   if(!req.user)
   {
     res.render("auth/login",
     {
         title: "Login",
         messages: req.flash("loginMessage"),
-        displayName: req.user ? req.user.displayName : ""
-    })
+        displayName: req.user ? req.user.displayName : "",
+    });
    }
    else
    {
     return res.redirect("/");
    }  
-}
+};
 
 module.exports.processLoginPage = (req, res, next) => {
     passport.authenticate("local",
@@ -53,10 +53,10 @@ module.exports.processLoginPage = (req, res, next) => {
             return next(err);
         }
         //is there a user login error?
-        if(user)
+        if(!user)
     {
        req.flash("loginMessage", "Authentication Error");
-       return res.redirect("login");
+       return res.redirect("/login");
     }
     req.login(user, (err) => {
         // server error ?
@@ -67,7 +67,7 @@ module.exports.processLoginPage = (req, res, next) => {
         return res.redirect("/contact-list");
     });
     })(req, res, next); 
-}
+};
 
 module.exports.displayRegisterPage = (req, res, next) => {
     // Check if the user is not already logged in
@@ -129,6 +129,10 @@ module.exports.processRegisterPage = (req, res, next) => {
 }
 
 module.exports.performLogout = (req, res, next) => {
-    req.logout();
-    res.redirect("/");
-}
+    req.logout(function (err) {
+        if (err) {
+          return next(err);
+        }
+        res.redirect("/");
+      });
+};
